@@ -1,6 +1,6 @@
 # 📘 CSE350: Data Communications
 
-This repository contains lab works, reports, and manuals for the **CSE350: Data Communications** course.
+This repository contains lab works, reports and manuals for the **CSE350: Data Communications** course.
 
 
 
@@ -14,7 +14,7 @@ This repository contains lab works, reports, and manuals for the **CSE350: Data 
 
 ## 📖 Course Overview
 
-This course introduces the core concepts of data communication and computer networks, including communication models, protocols, transmission techniques, and network architectures such as OSI and TCP/IP.
+This course introduces the core concepts of data communication and computer networks, including communication models, protocols, transmission techniques and network architectures such as OSI and TCP/IP.
 
 
 
