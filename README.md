@@ -31,15 +31,6 @@ The purpose of this repository is to:
 * Share useful materials with fellow students
 
 
-
-## 🚀 Why This Repository?
-
-✔️ Centralized academic resources
-✔️ Easy course wise navigation
-✔️ Helpful for revision and project reference
-
-
-
 ## ⚠️ Disclaimer
 
 These materials are shared strictly for educational purposes.
