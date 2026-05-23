@@ -1,6 +1,5 @@
-# Academic-Works
+# 🎓Academic Works
 
-# 🎓 Academic Course Resources Repository
 
 A well organized collection of course wise academic materials including projects, lab manuals, assignments, notes  and other essential resources throughout my academic journey.
 
