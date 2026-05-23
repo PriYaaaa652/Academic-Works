@@ -47,4 +47,4 @@ If you find this repository useful, feel free to give it a ⭐ on GitHub.
 
 **Farhatun Nahar Priya**
 
-> *"Learning, building, and improving every day."* 🚀
+> *"Learning, building and improving every day."* 🚀
