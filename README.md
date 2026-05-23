@@ -16,7 +16,7 @@ This repository contains materials related to different courses, such as:
 * 📊 Presentations
 * 📌 Additional Study Resources
 
-All resources are categorized course-wise to maintain clarity and easy accessibility.
+All resources are categorized course wise to maintain clarity and easy accessibility.
 
 
 
