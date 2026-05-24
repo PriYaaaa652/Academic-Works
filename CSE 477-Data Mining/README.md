@@ -1,4 +1,4 @@
-# CSE477 Data Mining Labs (Spring 2026)
+# CSE477 Data Mining Labs(Spring 2026)
 
 This repository contains my lab experiments and implementations for the course **CSE477 Data Mining**. The work focuses on practical text mining and analysis using YouTube comments and captions collected from a real educational video.
 
