@@ -1,4 +1,4 @@
-# 📘 CSE350: Data Communications
+# 📘 CSE350 Data Communications
 
 This repository contains lab works, reports and manuals for the **CSE350: Data Communications** course.
 
