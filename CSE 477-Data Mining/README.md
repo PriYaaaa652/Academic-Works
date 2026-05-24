@@ -5,13 +5,12 @@ The work focuses on practical text mining and analysis using YouTube comments an
 
 ## Course Instructor
 
-**Amit Mandal**  
+[**Amit Mandal**](https://fse.ewubd.edu/computer-science-engineering/faculty-view/amit.mandal)  
 Senior Lecturer  
 Department of Computer Science & Engineering  
 East West University  
 
-📧 amit.mandal@ewubd.edu  
-🔗 https://fse.ewubd.edu/computer-science-engineering/faculty-view/amit.mandal
+📧 amit.mandal@ewubd.edu
 
 ## Dataset Source
 
