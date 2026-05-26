@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSE477 Lab 1: Exploratory Data Analysis Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .code-block {
+            font-family: 'Fira Code', monospace;
+            background-color: #1e293b; /* Slate 800 */
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            overflow-x: hidden;
+            white-space: pre-wrap;
+            border-left: 4px solid #3b82f6;
+        }
+        .term-cmd {
+            font-family: 'Fira Code', monospace;
+            background-color: #000;
+            color: #10b981; /* Emerald 500 */
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+        }
+        h1, h2, h3 { color: #1e3a8a; } /* Dark Blue */
+        
+        @media print {
+            body { background: none; margin: 0; }
+            .page {
+                margin: 0;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+                page-break-after: always;
+            }
+            .no-print { display: none; }
+        }
+        
+        /* Utility for breaking pages */
+        .page-break { page-break-after: always; }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: Intro & Setup -->
+    <div class="page">
+        <!-- Header -->
+        <header class="border-b-4 border-blue-800 pb-4 mb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-extrabold text-blue-900 tracking-tight">LAB MANUAL: CSE477</h1>
+                <p class="text-xl text-blue-600 font-semibold mt-1">Data Mining & Exploratory Analysis</p>
+            </div>
+            <div class="text-right">
+                <p class="font-bold text-gray-500">LAB 01</p>
+                <p class="text-sm text-gray-400">YouTube Data EDA</p>
+            </div>
+        </header>
+
+        <!-- Intro Content -->
+        <main class="flex-grow">
+            
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8">
+                <h2 class="text-lg font-bold text-blue-800 mb-1"><i class="fas fa-info-circle mr-2"></i>Overview</h2>
+                <p class="text-sm text-blue-900">
+                    This manual guides you through <strong>Exploratory Data Analysis (EDA)</strong> on YouTube content. You will install tools, collect real-world text data (captions and comments), and perform Python-based experiments to analyze length distributions and vocabulary diversity.
+                </p>
+            </div>
+
+            <!-- Part 1: Getting Ready -->
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4 flex items-center text-slate-800">
+                    <span class="bg-blue-800 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">1</span>
+                    Getting Ready: Tools & Environment
+                </h2>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Python -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <i class="fab fa-python text-3xl text-yellow-500 mr-3"></i>
+                            <h3 class="font-bold text-lg">A. Install Python</h3>
+                        </div>
+                        <ul class="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                            <li><strong>Requirement:</strong> Python 3.10+</li>
+                            <li><strong>Source:</strong> python.org/downloads</li>
+                        </ul>
+                        <div class="mt-3">
+                            <p class="text-xs text-gray-500 mb-1">Verify in Terminal:</p>
+                            <div class="term-cmd">python --version</div>
+                        </div>
+                    </div>
+
+                    <!-- Libraries -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-cubes text-3xl text-purple-600 mr-3"></i>
+                            <h3 class="font-bold text-lg">C. Libraries</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Install required analysis packages:</p>
+                        <div class="term-cmd mb-2">pip install pandas matplotlib webvtt-py</div>
+                        <p class="text-xs text-gray-500"><strong>webvtt-py</strong> is essential for parsing caption files.</p>
+                    </div>
+                </div>
+
+                <!-- yt-dlp section -->
+                <div class="mt-6 bg-slate-100 rounded-lg p-6 border border-slate-300">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-download text-2xl text-red-600 mr-3"></i>
+                        <h3 class="font-bold text-lg text-slate-800">B. Install yt-dlp (Critical Tool)</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-semibold text-sm mb-2 text-slate-700">Method 1: PIP (Recommended)</h4>
+                            <div class="term-cmd">pip install yt-dlp</div>
+                            <p class="text-xs text-gray-500 mt-2">Works on Windows, Linux, and macOS via terminal.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-sm mb-2 text-slate-700">Method 2: Standalone Executable</h4>
+                            <p class="text-xs text-gray-600 mb-2">Download from GitHub Releases.</p>
+                            <ul class="list-disc pl-4 text-xs text-gray-600">
+                                <li><strong>Win:</strong> Download <code>yt-dlp.exe</code>, add to PATH.</li>
+                                <li><strong>Unix:</strong> Download binary to <code>/usr/local/bin</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-300 pt-4 mt-4 flex justify-between text-xs text-gray-500">
+            <span>CSE477 Lab Manual</span>
+            <span>Page 1 of 4</span>
+        </footer>
+    </div>
+
+    <!-- PAGE 2: Data Collection -->
+    <div class="page">
+        <!-- Header -->
+        <header class="border-b-2 border-gray-200 pb-2 mb-6">
+            <h2 class="text-xl font-bold text-gray-400">Data Collection Procedures</h2>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Part 2: Selection -->
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4 flex items-center text-slate-800">
+                    <span class="bg-blue-800 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">2</span>
+                    Data Selection & Ethics
+                </h2>
+
+                <div class="flex gap-6 mb-6">
+                    <div class="w-1/2">
+                        <h3 class="font-bold text-blue-700 mb-2">Selection Criteria</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <strong>Content:</strong> Educational, scientific, neutral.</li>
+                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> <strong>Volume:</strong> 50–100+ real comments.</li>
+                            <li class="flex items-start"><i class="fas fa-ban text-red-500 mt-1 mr-2"></i> <strong>Avoid:</strong> Politics, drama, clickbait, religion.</li>
+                        </ul>
+                    </div>
+                    <div class="w-1/2 bg-gray-50 p-4 rounded-md border border-gray-200">
+                        <h3 class="font-bold text-gray-700 mb-2 text-sm">Verified Safe Channels</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-xs">NASA</span>
+                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-xs">TED</span>
+                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-xs">NatGeo</span>
+                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-xs">BBC Earth</span>
+                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-xs">Veritasium</span>
+                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-xs">freeCodeCamp</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 italic">Check "About" page to confirm neutrality.</p>
+                    </div>
+                </div>
+
+                <!-- Download Process -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-lg text-slate-800 mb-3"><i class="fas fa-closed-captioning mr-2 text-blue-600"></i>Downloading Captions</h3>
+                    <div class="bg-slate-900 rounded-lg p-4 shadow-md">
+                        <p class="text-gray-400 text-xs mb-2">Run this in your terminal to get English auto-subs:</p>
+                        <div class="term-cmd bg-transparent p-0">yt-dlp --write-auto-subs --sub-lang en --skip-download "VIDEO_URL"</div>
+                        <p class="text-green-400 text-xs mt-2">Result: <code>VIDEOID.en.vtt</code> file generated.</p>
+                    </div>
+                </div>
+
+                <!-- Comments Process -->
+                <div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-3"><i class="fas fa-comments mr-2 text-blue-600"></i>Collecting Comments</h3>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Manual Method -->
+                        <div class="border-2 border-green-100 bg-green-50 rounded-lg p-4">
+                            <h4 class="font-bold text-green-800 mb-2">Method A: Manual (Recommended)</h4>
+                            <p class="text-xs text-green-900 mb-3">Most reliable due to API limits.</p>
+                            <ol class="list-decimal pl-4 text-sm text-gray-700 space-y-1">
+                                <li>Open video in browser.</li>
+                                <li>Scroll to load 100+ comments.</li>
+                                <li>Select text, Copy (Ctrl+C).</li>
+                                <li>Paste into <code>comments.txt</code>.</li>
+                            </ol>
+                        </div>
+                        
+                        <!-- Script Method -->
+                        <div class="border border-gray-200 bg-white rounded-lg p-4 opacity-75">
+                            <h4 class="font-bold text-gray-600 mb-2">Method B: Script (Advanced)</h4>
+                            <p class="text-xs text-gray-500 mb-2">Optional. Use <code>youtube-comment-downloader</code>.</p>
+                            <div class="term-cmd text-xs overflow-hidden">pip install youtube-comment-downloader</div>
+                            <p class="text-xs text-red-400 mt-2 font-semibold">Warning: Frequently breaks due to layout changes.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-300 pt-4 mt-4 flex justify-between text-xs text-gray-500">
+            <span>CSE477 Lab Manual</span>
+            <span>Page 2 of 4</span>
+        </footer>
+    </div>
+
+    <!-- PAGE 3: Analysis -->
+    <div class="page">
+        <!-- Header -->
+        <header class="border-b-2 border-gray-200 pb-2 mb-6">
+            <h2 class="text-xl font-bold text-gray-400">Python Analysis & Experiments</h2>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Part 3: Code & Experiments -->
+            <section>
+                <h2 class="text-2xl font-bold mb-4 flex items-center text-slate-800">
+                    <span class="bg-blue-800 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">3</span>
+                    Processing & Experiments
+                </h2>
+
+                <!-- Loading Data -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-sm uppercase tracking-wide text-gray-500 mb-2">1. Loading the Data</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs font-semibold mb-1">Load Comments (Cleaned)</p>
+                            <div class="code-block">
+def load_comments(path='comments.txt'):
+  data = []
+  with open(path, 'r', encoding='utf-8') as f:
+    for line in f:
+      if len(line.strip()) > 0:
+        data.append(line.strip())
+  return data</div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold mb-1">Load Captions (VTT)</p>
+                            <div class="code-block">
+def load_vtt(path='captions.vtt'):
+  captions = []
+  with open(path, 'r') as f:
+    for line in f:
+      # Filter timestamps/metadata
+      if '-->' not in line and line.strip():
+        captions.append(line.strip())
+  return captions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experiment 1: Histogram -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-sm uppercase tracking-wide text-gray-500 mb-2">2. Exp A: Length Distribution (Histogram)</h3>
+                    <div class="flex gap-4">
+                        <div class="w-1/2">
+                            <p class="text-sm text-gray-700 mb-2">Compare the character length of "Authored" text (Captions) vs. "User-Generated" text (Comments).</p>
+                            <div class="code-block text-xs">
+plt.hist(cap_lens, bins=20, label='Captions')
+plt.hist(com_lens, bins=20, label='Comments')
+plt.legend()
+plt.show()</div>
+                        </div>
+                        <div class="w-1/2 border rounded p-2 flex items-center justify-center bg-white">
+                             <canvas id="histChart" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experiment 2 & 3 -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- TTR -->
+                    <div>
+                        <h3 class="font-bold text-sm uppercase tracking-wide text-gray-500 mb-2">3. Exp B: Vocabulary Diversity</h3>
+                        <div class="bg-blue-50 p-3 rounded border border-blue-100">
+                            <p class="font-bold text-blue-900 text-sm">Type-Token Ratio (TTR)</p>
+                            <p class="text-xs text-gray-600 mb-2">Formula: <code>Unique Words / Total Words</code></p>
+                            <div class="code-block text-xs bg-slate-800">
+def ttr(lines):
+  words = [w for l in lines for w in l.split()]
+  return len(set(words)) / len(words)</div>
+                        </div>
+                    </div>
+
+                    <!-- Top Words -->
+                    <div>
+                        <h3 class="font-bold text-sm uppercase tracking-wide text-gray-500 mb-2">4. Exp C: Top Words</h3>
+                        <div class="bg-white border p-3 rounded relative">
+                            <p class="text-xs text-gray-500 mb-1">Remove stopwords first (the, a, is...).</p>
+                            <canvas id="barChart" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-300 pt-4 mt-4 flex justify-between text-xs text-gray-500">
+            <span>CSE477 Lab Manual</span>
+            <span>Page 3 of 4</span>
+        </footer>
+    </div>
+
+    <!-- PAGE 4: Checklist & Conclusion -->
+    <div class="page">
+         <!-- Header -->
+         <header class="border-b-2 border-gray-200 pb-2 mb-6">
+            <h2 class="text-xl font-bold text-gray-400">Final Verification</h2>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Part 4: Checklist -->
+            <section class="mb-10">
+                <h2 class="text-2xl font-bold mb-6 text-slate-800">
+                   Student Checklist
+                </h2>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex items-center">
+                        <div class="w-6 h-6 rounded border-2 border-green-500 mr-3 flex items-center justify-center text-green-500"><i class="fas fa-check text-xs"></i></div>
+                        <span class="text-gray-700">Python 3.10+ and <code>yt-dlp</code> installed successfully.</span>
+                    </div>
+                    <div class="p-4 border-b border-gray-100 flex items-center bg-gray-50">
+                        <div class="w-6 h-6 rounded border-2 border-gray-300 mr-3"></div>
+                        <span class="text-gray-700">Selected a neutral, educational video (50+ comments).</span>
+                    </div>
+                    <div class="p-4 border-b border-gray-100 flex items-center">
+                        <div class="w-6 h-6 rounded border-2 border-gray-300 mr-3"></div>
+                        <span class="text-gray-700">Downloaded <code>captions.vtt</code> and saved <code>comments.txt</code>.</span>
+                    </div>
+                    <div class="p-4 border-b border-gray-100 flex items-center bg-gray-50">
+                        <div class="w-6 h-6 rounded border-2 border-gray-300 mr-3"></div>
+                        <span class="text-gray-700">Ran Python scripts for Histogram, TTR, and Word Frequency.</span>
+                    </div>
+                    <div class="p-4 flex items-center">
+                        <div class="w-6 h-6 rounded border-2 border-gray-300 mr-3"></div>
+                        <span class="text-gray-700">Interpreted plots and noted findings in report.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ethics & References -->
+            <div class="grid grid-cols-2 gap-8">
+                <section>
+                    <h3 class="font-bold text-red-700 mb-3 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i> Ethics & Integrity
+                    </h3>
+                    <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 text-sm text-red-900">
+                        <ul class="space-y-2">
+                            <li><strong>Public Only:</strong> Never scrape private or unlisted content.</li>
+                            <li><strong>Attribution:</strong> Always credit the source video and channel in your final report.</li>
+                            <li><strong>Respect:</strong> Do not analyze hate speech or controversial content for this introductory lab.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="font-bold text-blue-700 mb-3 flex items-center">
+                        <i class="fas fa-book mr-2"></i> Verified Sources
+                    </h3>
+                    <ul class="text-xs text-gray-600 space-y-2">
+                        <li class="flex items-center"><i class="fas fa-link mr-2 text-gray-400"></i> yt-dlp Official GitHub / PyPI</li>
+                        <li class="flex items-center"><i class="fas fa-link mr-2 text-gray-400"></i> WebVTT Format Standards</li>
+                        <li class="flex items-center"><i class="fas fa-link mr-2 text-gray-400"></i> Python.org Documentation</li>
+                        <li class="flex items-center"><i class="fas fa-link mr-2 text-gray-400"></i> Data Mining Textbooks (Exploratory Analysis)</li>
+                    </ul>
+                </section>
+            </div>
+            
+            <div class="mt-12 text-center text-gray-400 text-sm">
+                <p>End of Manual</p>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-300 pt-4 mt-4 flex justify-between text-xs text-gray-500">
+            <span>CSE477 Lab Manual</span>
+            <span>Page 4 of 4</span>
+        </footer>
+    </div>
+
+    <!-- Scripts for Charts -->
+    <script>
+        // Histogram Data (Illustrative)
+        const ctxHist = document.getElementById('histChart').getContext('2d');
+        new Chart(ctxHist, {
+            type: 'bar',
+            data: {
+                labels: ['0-50', '51-100', '101-150', '151-200', '200+'],
+                datasets: [{
+                    label: 'Comments',
+                    data: [45, 25, 10, 5, 2],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                }, {
+                    label: 'Captions',
+                    data: [5, 15, 30, 40, 10],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } },
+                    title: { display: true, text: 'Length Distribution (Chars)', font: { size: 11 } }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 9 } } },
+                    y: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+
+        // Top Words Data (Illustrative)
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['data', 'video', 'space', 'learn', 'world'],
+                datasets: [{
+                    label: 'Frequency',
+                    data: [120, 95, 80, 60, 45],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Top 5 Words (No Stopwords)', font: { size: 11 } }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 9 } } },
+                    y: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
