@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 2: Data Cleaning & Preprocessing Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Print Settings */
+        @media print {
+            body { 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                background-color: white !important;
+            }
+            .page-break { page-break-after: always; }
+            .no-print { display: none; }
+            .page { 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+        }
+
+        /* A4 Page Simulation for Screen */
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .page {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 40px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Typography & Components */
+        h1, h2, h3 { color: #1e3a8a; } /* Blue-900 */
+        .highlight-box {
+            background-color: #eff6ff; /* Blue-50 */
+            border-left: 4px solid #3b82f6; /* Blue-500 */
+        }
+        .prompt-box {
+            background-color: #f3e8ff; /* Purple-100 */
+            border: 1px solid #d8b4fe; /* Purple-300 */
+        }
+        .search-box {
+            background-color: #f0fdf4; /* Green-50 */
+            border: 1px solid #86efac; /* Green-300 */
+        }
+        .code-block {
+            background-color: #1f2937; /* Gray-800 */
+            color: #e5e7eb; /* Gray-200 */
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .warning-box {
+            background-color: #fff7ed; /* Orange-50 */
+            border-left: 4px solid #f97316; /* Orange-500 */
+        }
+
+        /* Footer positioning */
+        .page-footer {
+            margin-top: auto;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
+            font-size: 0.8rem;
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE 1: Intro & Importance -->
+    <div class="page">
+        <!-- Header -->
+        <header class="flex justify-between items-center border-b-2 border-blue-900 pb-4 mb-8">
+            <div>
+                <h2 class="text-xl font-bold text-gray-700">CSE477 — Data Mining</h2>
+                <p class="text-sm text-gray-500">Manual for Students</p>
+            </div>
+            <div class="text-right">
+                <h1 class="text-2xl font-extrabold text-blue-900">LAB 2</h1>
+                <p class="text-sm font-semibold text-blue-600">Data Cleaning & Preprocessing</p>
+            </div>
+        </header>
+
+        <!-- Main Title Section -->
+        <div class="bg-blue-900 text-white p-8 rounded-lg shadow-lg mb-8 text-center">
+            <i class="fa-solid fa-broom text-5xl mb-4 text-blue-300"></i>
+            <h1 class="text-3xl font-bold mb-2">Cleaning YouTube Text Data</h1>
+            <p class="text-blue-200">The "Master Key" to accurate mining results.</p>
+        </div>
+
+        <!-- The "Why" Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-blue-600 pl-3">1. Why Data Cleaning Matters</h2>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="bg-red-50 p-4 rounded border border-red-200">
+                    <h3 class="font-bold text-red-700 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> The Risk
+                    </h3>
+                    <p class="text-sm text-gray-700 mt-2">
+                        <strong>"Garbage In, Garbage Out"</strong><br>
+                        Raw comments contain emojis, messy timestamps, and UI junk. If ignored, future labs (Clustering, Topic Mining) will fail.
+                    </p>
+                </div>
+                <div class="bg-green-50 p-4 rounded border border-green-200">
+                    <h3 class="font-bold text-green-700 flex items-center gap-2">
+                        <i class="fa-solid fa-check-circle"></i> The Goal
+                    </h3>
+                    <p class="text-sm text-gray-700 mt-2">
+                        <strong>Clean & Normalized Data</strong><br>
+                        Learn to profile, parse, normalize, and tokenize. Do this well now, and every future task becomes easy.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Tools -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-blue-600 pl-3">2. Preparation & Tools</h2>
+            <p class="mb-4 text-gray-700">Ensure you have your <code>comments.txt</code> and <code>captions.vtt</code> from Lab 1.</p>
+            
+            <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                <h4 class="font-bold text-gray-800 mb-2"><i class="fa-solid fa-terminal"></i> Installation Command</h4>
+                <div class="code-block p-3 rounded text-sm">
+                    pip install pandas matplotlib nltk webvtt-py
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-bold text-blue-800 mb-2"><i class="fa-solid fa-download"></i> NLTK Setup (Run Once)</h4>
+                <div class="code-block p-3 rounded text-sm bg-blue-900">
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+                </div>
+            </div>
+        </section>
+
+        <!-- Self Learning Box -->
+        <div class="mt-auto">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="search-box p-3 rounded text-xs">
+                    <strong class="text-green-700"><i class="fa-brands fa-google"></i> Google Search:</strong>
+                    <p>why is data cleaning important for text mining</p>
+                </div>
+                <div class="prompt-box p-3 rounded text-xs">
+                    <strong class="text-purple-700"><i class="fa-solid fa-robot"></i> LLM Prompt:</strong>
+                    <p>Explain why preprocessing is critical for text mining tasks.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <span>CSE477 Lab 2 Manual</span>
+            <span>Page 1 of 5</span>
+        </footer>
+    </div>
+    
+    <div class="page-break"></div>
+
+    <!-- PAGE 2: Profiling & Workflow -->
+    <div class="page">
+        <!-- Header -->
+        <header class="flex justify-between items-center border-b-2 border-gray-200 pb-2 mb-6">
+            <span class="text-gray-500 font-bold">Profiling & Workflow</span>
+            <span class="text-blue-900 font-bold">Lab 2</span>
+        </header>
+
+        <!-- Profiling Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-orange-500 pl-3">3. Profiling Your Data (Don't Skip!)</h2>
+            <div class="warning-box p-5 rounded-lg shadow-sm mb-4">
+                <h3 class="text-orange-800 font-bold text-lg mb-2"><i class="fa-solid fa-eye"></i> Know Thy Data</h3>
+                <p class="text-gray-700 mb-2">
+                    Before coding, <strong>open your text files</strong> in a simple editor. Everyone's files are different. Blindly copying code leads to errors.
+                </p>
+                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                    <li>Is the structure: <em>User -> Timestamp -> Comment</em>?</li>
+                    <li>Are there UI artifacts like "Reply" or "...more"?</li>
+                    <li>Is the caption file a raw <code>.vtt</code> or edited text?</li>
+                </ul>
+            </div>
+            
+            <div class="flex gap-4">
+                 <div class="search-box p-3 rounded text-xs flex-1">
+                    <strong class="text-green-700">Google:</strong> how to inspect a text file before processing python
+                </div>
+                <div class="prompt-box p-3 rounded text-xs flex-1">
+                    <strong class="text-purple-700">LLM Prompt:</strong> Give me a checklist for profiling raw text data before coding.
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow Diagram -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-6 border-l-4 border-blue-600 pl-3">4. General Cleaning Workflow</h2>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+                <!-- Step 1 -->
+                <div class="flex-1 p-4 bg-white border-2 border-gray-200 rounded-lg shadow-sm relative">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Step 1</div>
+                    <i class="fa-solid fa-file-lines text-3xl text-gray-400 mb-2"></i>
+                    <h4 class="font-bold text-sm">Profile Data</h4>
+                    <p class="text-xs text-gray-500">Inspect structure</p>
+                </div>
+                <i class="fa-solid fa-arrow-right text-gray-300 hidden md:block"></i>
+                
+                <!-- Step 2 -->
+                <div class="flex-1 p-4 bg-white border-2 border-gray-200 rounded-lg shadow-sm relative">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Step 2</div>
+                    <i class="fa-solid fa-table text-3xl text-blue-500 mb-2"></i>
+                    <h4 class="font-bold text-sm">Parse to Table</h4>
+                    <p class="text-xs text-gray-500">Create DataFrame</p>
+                </div>
+                <i class="fa-solid fa-arrow-right text-gray-300 hidden md:block"></i>
+
+                <!-- Step 3 -->
+                <div class="flex-1 p-4 bg-white border-2 border-gray-200 rounded-lg shadow-sm relative">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Step 3</div>
+                    <i class="fa-solid fa-pump-soap text-3xl text-green-500 mb-2"></i>
+                    <h4 class="font-bold text-sm">Clean Text</h4>
+                    <p class="text-xs text-gray-500">Normalize & Tokenize</p>
+                </div>
+                <i class="fa-solid fa-arrow-right text-gray-300 hidden md:block"></i>
+
+                <!-- Step 4 -->
+                <div class="flex-1 p-4 bg-white border-2 border-gray-200 rounded-lg shadow-sm relative">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded">Step 4</div>
+                    <i class="fa-solid fa-file-csv text-3xl text-purple-500 mb-2"></i>
+                    <h4 class="font-bold text-sm">Export</h4>
+                    <p class="text-xs text-gray-500">Save as CSV</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Algorithm Intro -->
+        <section class="flex-grow">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-blue-600 pl-3">5A. Parsing Algorithms: Adaptive</h2>
+            <p class="text-gray-700 mb-4">Do not just copy-paste. Understand the logic below to adapt to your specific file layout.</p>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Comments Logic -->
+                <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                    <h4 class="font-bold text-blue-800 mb-2">Parsing Comments</h4>
+                    <ul class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                        <li>Read lines from <code>comments.txt</code>.</li>
+                        <li>Use Regex to find lines like <em>"3 days ago"</em>.</li>
+                        <li>The line <strong>before</strong> is the <em>Username</em>.</li>
+                        <li>Lines <strong>after</strong> are the <em>Comment</em>.</li>
+                        <li>Stop when next timestamp or EOF is found.</li>
+                    </ul>
+                </div>
+                
+                <!-- Captions Logic -->
+                <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                    <h4 class="font-bold text-blue-800 mb-2">Parsing Captions</h4>
+                    <ul class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                        <li>Try <code>webvtt.read()</code> first.</li>
+                        <li>Fallback: Manual line reading if VTT is broken.</li>
+                        <li>Filter out timestamps (<code>--></code>) and numbers.</li>
+                        <li>Combine lines into full text.</li>
+                        <li>Split by punctuation into sentences.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <span>CSE477 Lab 2 Manual</span>
+            <span>Page 2 of 5</span>
+        </footer>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- PAGE 3: Coding Implementation -->
+    <div class="page">
+        <!-- Header -->
+        <header class="flex justify-between items-center border-b-2 border-gray-200 pb-2 mb-6">
+            <span class="text-gray-500 font-bold">Implementation Code</span>
+            <span class="text-blue-900 font-bold">Lab 2</span>
+        </header>
+
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-blue-600 pl-3">5B. Parsing Code Snippets</h2>
+            
+            <!-- Comment Parser -->
+            <div class="mb-4">
+                <div class="flex justify-between items-end mb-1">
+                    <h3 class="font-bold text-gray-800">1. Structure Comments (Python)</h3>
+                    <span class="text-xs text-gray-500 italic">Adapt regex for your data</span>
+                </div>
+                <div class="code-block p-4 rounded text-xs overflow-x-hidden">
+def structure_comments_from_txt(filepath='comments.txt'):
+    # Setup Regex for timestamps (e.g., "2 days ago")
+    time_regex = re.compile(r'.*(second|minute|hour|day|week|year)s? ago.*', re.IGNORECASE)
+    
+    # Loop through lines...
+    # If line matches timestamp:
+    #   Previous line = Username
+    #   Following lines = Comment Text (until next match)
+    # Store in list of dictionaries -> Convert to DataFrame
+    return pd.DataFrame(comments_data)
+                </div>
+            </div>
+
+            <!-- Caption Parser -->
+            <div class="mb-4">
+                <h3 class="font-bold text-gray-800 mb-1">2. Structure Captions (Robust Fallback)</h3>
+                <div class="code-block p-4 rounded text-xs overflow-x-hidden">
+try:
+    # Attempt standard library read
+    full_text = ' '.join([c.text for c in webvtt.read(filepath)])
+except:
+    # Fallback for manually edited files
+    lines = [line.strip() for line in open(filepath) 
+             if '-->' not in line and not line.isdigit()]
+    full_text = ' '.join(lines)
+
+# Split into sentences using Regex lookbehind
+sentences = re.split(r'(?<=[.!?]) +', full_text)
+return pd.DataFrame(sentences, columns=['caption_sentence'])
+                </div>
+            </div>
+        </section>
+
+        <!-- The Pipeline Concepts -->
+        <section class="flex-grow">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-blue-600 pl-3">5C. The Cleaning Pipeline</h2>
+            <p class="mb-4 text-gray-700">Once data is in a DataFrame, run every row through this pipeline.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="border p-3 rounded bg-white shadow-sm">
+                    <h4 class="font-bold text-blue-700">1. Normalization</h4>
+                    <p class="text-xs text-gray-600">Lowercase, remove brackets <code>[]</code>, remove punctuation/numbers. Keep only letters (a-z).</p>
+                </div>
+                <div class="border p-3 rounded bg-white shadow-sm">
+                    <h4 class="font-bold text-blue-700">2. Tokenization</h4>
+                    <p class="text-xs text-gray-600">Split the string into a list of individual words (tokens) using <code>word_tokenize</code>.</p>
+                </div>
+                <div class="border p-3 rounded bg-white shadow-sm">
+                    <h4 class="font-bold text-blue-700">3. Stopword Removal</h4>
+                    <p class="text-xs text-gray-600">Remove common words (is, the, and) that carry little semantic meaning.</p>
+                </div>
+                <div class="border p-3 rounded bg-white shadow-sm">
+                    <h4 class="font-bold text-blue-700">4. Lemmatization</h4>
+                    <p class="text-xs text-gray-600">Convert words to their root form (e.g., "studies" → "study"). Better than stemming.</p>
+                </div>
+            </div>
+
+            <!-- Prompt Box -->
+            <div class="mt-6 prompt-box p-4 rounded">
+                <strong class="text-purple-700"><i class="fa-solid fa-robot"></i> LLM Prompt for Code:</strong>
+                <p class="text-sm text-gray-700 mt-1">
+                    "Show me a Python function that normalizes, tokenizes, removes stopwords, and lemmatizes a list of sentences."
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <span>CSE477 Lab 2 Manual</span>
+            <span>Page 3 of 5</span>
+        </footer>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- PAGE 4: Pipeline Details & Viz -->
+    <div class="page">
+        <!-- Header -->
+        <header class="flex justify-between items-center border-b-2 border-gray-200 pb-2 mb-6">
+            <span class="text-gray-500 font-bold">Pipeline Code & Visualization</span>
+            <span class="text-blue-900 font-bold">Lab 2</span>
+        </header>
+
+        <!-- Code Block for Pipeline -->
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-blue-600 pl-3">Full Cleaning Function</h2>
+            <div class="code-block p-4 rounded text-xs mb-4">
+def clean_text_pipeline(text):
+    # 1. Normalize
+    text = re.sub(r'[^a-z\s]', '', text.lower().strip())
+    
+    # 2. Tokenize
+    tokens = word_tokenize(text)
+    
+    # 3. Stopwords & Length Filter
+    tokens = [w for w in tokens if w not in stop_words and len(w) > 2]
+    
+    # 4. Lemmatize
+    return [lemmatizer.lemmatize(w) for w in tokens]
+
+# Apply to DataFrame
+comments_df['cleaned_tokens'] = comments_df['comment_text'].apply(clean_text_pipeline)
+            </div>
+        </section>
+
+        <!-- Visualization -->
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Visualizing Data Reduction</h2>
+            <div class="bg-white p-4 rounded-lg shadow border border-gray-200" style="height: 300px;">
+                <canvas id="cleaningChart"></canvas>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-center italic">
+                Figure 1: Illustrative reduction of token count through cleaning stages.
+            </p>
+        </section>
+
+        <!-- Stemming vs Lemmatization -->
+        <section class="flex-grow">
+            <div class="bg-indigo-50 p-5 rounded-lg border border-indigo-100">
+                <h3 class="font-bold text-indigo-900 mb-2">Concept: Stemming vs. Lemmatization</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <strong class="block text-gray-700">Input:</strong>
+                        <div class="bg-white p-2 rounded border mt-1">"studies", "studying"</div>
+                    </div>
+                    <div>
+                        <strong class="block text-gray-700">Output:</strong>
+                        <div class="mt-1">
+                            <span class="text-red-600 font-mono">Stemming:</span> "studi", "study"<br>
+                            <span class="text-green-600 font-mono">Lemmatization:</span> "study", "study"
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-indigo-800 mt-3">
+                    <em>Recommendation: Use Lemmatization (NLTK WordNet) for more accurate topic modeling.</em>
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <span>CSE477 Lab 2 Manual</span>
+            <span>Page 4 of 5</span>
+        </footer>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- PAGE 5: Export, Checklist, Troubleshooting -->
+    <div class="page">
+        <!-- Header -->
+        <header class="flex justify-between items-center border-b-2 border-gray-200 pb-2 mb-6">
+            <span class="text-gray-500 font-bold">Final Steps</span>
+            <span class="text-blue-900 font-bold">Lab 2</span>
+        </header>
+
+        <!-- Export -->
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-green-500 pl-3">6. Exporting for Future Labs</h2>
+            <p class="text-gray-700 mb-2">Save your work now to avoid re-cleaning later.</p>
+            <div class="code-block p-3 rounded text-sm mb-4">
+comments_df.to_csv('cleaned_comments.csv', index=False)
+captions_df.to_csv('cleaned_captions.csv', index=False)
+            </div>
+        </section>
+
+        <!-- Checklist -->
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-blue-600 pl-3">7. Final Checklist</h2>
+            <div class="bg-white rounded-lg border border-gray-200 p-4">
+                <ul class="space-y-3">
+                    <li class="flex items-center text-gray-700">
+                        <i class="fa-regular fa-square-check text-blue-500 mr-3 text-xl"></i>
+                        Profiled raw files (opened in text editor).
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <i class="fa-regular fa-square-check text-blue-500 mr-3 text-xl"></i>
+                        Parsed comments & captions into DataFrames.
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <i class="fa-regular fa-square-check text-blue-500 mr-3 text-xl"></i>
+                        Normalized & Tokenized (Lowercase, regex clean).
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <i class="fa-regular fa-square-check text-blue-500 mr-3 text-xl"></i>
+                        Filtered Stopwords & (Optional) Lemmatized.
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <i class="fa-regular fa-square-check text-blue-500 mr-3 text-xl"></i>
+                        <strong>Exported CSV files.</strong>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section class="mb-6">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-orange-500 pl-3">8. Troubleshooting</h2>
+            <div class="grid grid-cols-1 gap-3 text-sm">
+                <div class="bg-red-50 p-3 rounded border border-red-100">
+                    <strong>NLTK Errors?</strong>
+                    <p>Rerun the <code>nltk.download()</code> commands in Section 2.</p>
+                </div>
+                <div class="bg-orange-50 p-3 rounded border border-orange-100">
+                    <strong>Non-English (Bangla)?</strong>
+                    <p>Standard NLTK is English-only. Search: <em>"Bangla NLP tools python"</em> for custom stopword lists.</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded border border-blue-100">
+                    <strong>Code Fails?</strong>
+                    <p>Your file structure likely differs from the example. Profile your file again and adjust the parser logic.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sources -->
+        <section class="mt-auto pt-4 border-t border-gray-300">
+            <h3 class="text-sm font-bold text-gray-600 mb-2">References & Resources</h3>
+            <div class="flex flex-wrap gap-4 text-xs text-blue-600 underline">
+                <span>NLTK Official Docs</span>
+                <span>Pandas Documentation</span>
+                <span>Python re (Regex)</span>
+                <span>webvtt-py Library</span>
+            </div>
+            <p class="text-center text-gray-400 text-xs mt-6 italic">
+                "Jump on it like wolves—the smarter the preparation, the easier the hunt."
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <span>CSE477 Lab 2 Manual</span>
+            <span>Page 5 of 5</span>
+        </footer>
+    </div>
+
+    <!-- Chart Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('cleaningChart').getContext('2d');
+            const cleaningChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Raw Tokens', 'Normalized', 'No Stopwords', 'Lemmatized'],
+                    datasets: [{
+                        label: 'Vocabulary Size (Tokens)',
+                        data: [12000, 11500, 6500, 5800], // Illustrative data
+                        backgroundColor: [
+                            'rgba(156, 163, 175, 0.5)', // Gray
+                            'rgba(59, 130, 246, 0.5)',  // Blue
+                            'rgba(16, 185, 129, 0.5)',  // Green
+                            'rgba(139, 92, 246, 0.8)'   // Purple (Final)
+                        ],
+                        borderColor: [
+                            'rgba(156, 163, 175, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(139, 92, 246, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Word Count'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Effect of Cleaning Stages on Data Volume'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
