@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSE477: Data Mining Lab Roadmap</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #c0392b;
+            --light: #ecf0f1;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* --- CONTROLS --- */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .toggle-btn {
+            background: var(--light);
+            border: 2px solid var(--text);
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* --- PIPELINE (LABS) --- */
+        .pipeline-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        /* Arrows connecting labs */
+        .pipeline-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background: #bdc3c7;
+            z-index: 0;
+        }
+
+        .lab-node {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border: 3px solid var(--accent);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .lab-node:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.4);
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .lab-node.critical {
+            border-color: var(--warning);
+        }
+
+        .lab-node .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .lab-node .label {
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Garbage State Styles */
+        .garbage-mode .lab-node.dependent {
+            border-color: var(--danger);
+            background-color: #fadbd8;
+            opacity: 0.7;
+        }
+        
+        .garbage-mode .lab-node#lab2 {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* --- TOOLTIP (INFO PANEL) --- */
+        .info-panel {
+            min-height: 120px;
+            background: var(--light);
+            border-left: 5px solid var(--accent);
+            padding: 15px;
+            margin-bottom: 40px;
+            border-radius: 0 8px 8px 0;
+            opacity: 0; 
+            transition: opacity 0.3s;
+        }
+        
+        .info-panel.visible {
+            opacity: 1;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .info-desc {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        /* --- PROJECT STRUCTURE --- */
+        .project-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .paper-sheet {
+            width: 600px;
+            background: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            position: relative;
+        }
+
+        .paper-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-decoration: underline;
+        }
+
+        .paper-part {
+            border: 2px dashed #bdc3c7;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .paper-part span {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .paper-part p {
+            font-size: 12px;
+            margin: 0;
+            color: #7f8c8d;
+        }
+
+        /* Connection Highlighting */
+        .paper-part.highlight {
+            border-color: var(--success);
+            background-color: #eafaf1;
+            transform: scale(1.02);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .garbage-mode .paper-part.corrupted {
+            border-color: var(--danger);
+            background-color: #f2d7d5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .garbage-mode .paper-part.corrupted::after {
+            content: "GARBAGE OUT";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-10deg);
+            font-size: 20px;
+            color: rgba(192, 57, 43, 0.5);
+            font-weight: bold;
+            border: 2px solid rgba(192, 57, 43, 0.5);
+            padding: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>CSE477: Course Roadmap & Workflow</h1>
+        
+        <div class="controls">
+            <button class="toggle-btn" id="garbageToggle" onclick="toggleGarbageMode()">⚠️ Simulate Bad Preprocessing</button>
+        </div>
+
+        <h3 style="text-align:center; color:#7f8c8d;">Phase 1: The Learning Pipeline</h3>
+        
+        <div class="pipeline-container">
+            <div class="lab-node" id="lab1" onmouseenter="showInfo('lab1')" onmouseleave="hideInfo()">
+                <div class="icon">📥</div>
+                <div class="label">Lab 1<br>Collection</div>
+            </div>
+
+            <div class="lab-node critical" id="lab2" onmouseenter="showInfo('lab2')" onmouseleave="hideInfo()">
+                <div class="icon">🧹</div>
+                <div class="label">Lab 2<br>Cleaning</div>
+            </div>
+
+            <div class="lab-node dependent" id="lab3" onmouseenter="showInfo('lab3')" onmouseleave="hideInfo()">
+                <div class="icon">🔗</div>
+                <div class="label">Lab 3<br>Patterns</div>
+            </div>
+
+            <div class="lab-node dependent" id="lab4" onmouseenter="showInfo('lab4')" onmouseleave="hideInfo()">
+                <div class="icon">⏳</div>
+                <div class="label">Lab 4<br>Trends</div>
+            </div>
+
+            <div class="lab-node dependent" id="lab5" onmouseenter="showInfo('lab5')" onmouseleave="hideInfo()">
+                <div class="icon">🧩</div>
+                <div class="label">Lab 5<br>Cluster</div>
+            </div>
+
+            <div class="lab-node dependent" id="lab6" onmouseenter="showInfo('lab6')" onmouseleave="hideInfo()">
+                <div class="icon">🎭</div>
+                <div class="label">Lab 6<br>Synthesis</div>
+            </div>
+        </div>
+
+        <div class="info-panel" id="infoPanel">
+            <div class="info-title" id="infoTitle">Hover over a Lab module</div>
+            <div class="info-desc" id="infoDesc">Discover what you will learn and how it connects to the final project.</div>
+        </div>
+
+        <hr style="border: 0; border-top: 2px dashed #ddd; margin: 40px 0;">
+
+        <h3 style="text-align:center; color:#7f8c8d;">Phase 2: The Project Architecture (Research Toolkit)</h3>
+        
+        <div class="project-section">
+            <div class="paper-sheet">
+                <div class="paper-title">Final Research Project</div>
+                
+                <div class="paper-part" id="part-data">
+                    <span>1. Data Collection & Dataset</span>
+                    <p>Raw data gathering (yt-dlp) and understanding structure.</p>
+                </div>
+
+                <div class="paper-part" id="part-method">
+                    <span>2. Methodology (Preprocessing)</span>
+                    <p>Cleaning, Tokenization, Normalization. The foundation of the research.</p>
+                </div>
+
+                <div class="paper-part" id="part-analysis">
+                    <span>3. Analysis & Algorithms</span>
+                    <p>Applying Apriori, K-Means, and Temporal logic to find insights.</p>
+                </div>
+
+                <div class="paper-part" id="part-discuss">
+                    <span>4. Discussion & Conclusion</span>
+                    <p>Synthesizing sentiment and trends to answer the research question.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for the labs (English & Bangla Mix as requested)
+        const labData = {
+            lab1: {
+                title: "Lab 1: Data Collection & Exploration",
+                desc: "<b>কাজ:</b> `yt-dlp` ব্যবহার করে ডেটা সংগ্রহ। <br><b>Learning:</b> অথরড টেক্সট এবং ইউজার কন্টেন্টের পার্থক্য বোঝা। <br><b>Project Link:</b> এটি প্রজেক্টের 'Data Collection' অংশের ভিত্তি।",
+                target: "part-data"
+            },
+            lab2: {
+                title: "Lab 2: Preprocessing (The Master Key)",
+                desc: "<b>কাজ:</b> Tokenization & Noise Reduction. <br><b>Learning:</b> 'Garbage-in, Garbage-out'. এই ধাপটি ভুল হলে পুরো প্রজেক্টের রেজাল্ট ভুল হবে। <br><b>Project Link:</b> 'Methodology' সেকশন।",
+                target: "part-method"
+            },
+            lab3: {
+                title: "Lab 3: Pattern Discovery",
+                desc: "<b>কাজ:</b> Apriori Algorithm. <br><b>Learning:</b> Support, Confidence, Lift মেট্রিক্সের ব্যাখ্যা শেখা। <br><b>Project Link:</b> 'Analysis' সেকশন।",
+                target: "part-analysis"
+            },
+            lab4: {
+                title: "Lab 4: Temporal Analysis",
+                desc: "<b>কাজ:</b> টাইম-বেসড অ্যানালাইসিস। <br><b>Learning:</b> ডেটা স্থির নয়; সময়ের সাথে ট্রেন্ড কিভাবে বদলায় তা দেখা। <br><b>Project Link:</b> 'Analysis' সেকশন।",
+                target: "part-analysis"
+            },
+            lab5: {
+                title: "Lab 5: Unsupervised Learning",
+                desc: "<b>কাজ:</b> Clustering (K-Means/DBSCAN). <br><b>Learning:</b> লেবেল ছাড়া ডেটা থেকে থিম বের করা এবং ক্রিটিকালি যাচাই করা। <br><b>Project Link:</b> 'Analysis' সেকশন।",
+                target: "part-analysis"
+            },
+            lab6: {
+                title: "Lab 6: Synthesis & Sentiment",
+                desc: "<b>কাজ:</b> Sentiment Analysis & Integration. <br><b>Learning:</b> বিভিন্ন সোর্স থেকে ইনসাইট একত্র করে কনক্লুশন টানা। <br><b>Project Link:</b> 'Discussion & Conclusion' সেকশন।",
+                target: "part-discuss"
+            }
+        };
+
+        const infoPanel = document.getElementById('infoPanel');
+        const infoTitle = document.getElementById('infoTitle');
+        const infoDesc = document.getElementById('infoDesc');
+        const garbageBtn = document.getElementById('garbageToggle');
+        let isGarbageMode = false;
+
+        function showInfo(labId) {
+            const data = labData[labId];
+            infoTitle.innerHTML = data.title;
+            infoDesc.innerHTML = data.desc;
+            infoPanel.classList.add('visible');
+
+            // Highlight Project Section
+            if (data.target) {
+                document.getElementById(data.target).classList.add('highlight');
+            }
+        }
+
+        function hideInfo() {
+            infoPanel.classList.remove('visible');
+            // Remove Highlights
+            document.querySelectorAll('.paper-part').forEach(el => el.classList.remove('highlight'));
+        }
+
+        function toggleGarbageMode() {
+            isGarbageMode = !isGarbageMode;
+            document.body.classList.toggle('garbage-mode');
+            garbageBtn.classList.toggle('active');
+
+            if (isGarbageMode) {
+                garbageBtn.innerText = "⚠️ Bad Cleaning Active (Results Corrupted)";
+                // Corrupt downstream project parts
+                document.getElementById('part-analysis').classList.add('corrupted');
+                document.getElementById('part-discuss').classList.add('corrupted');
+                
+                // Show critical message
+                infoTitle.innerHTML = "🚫 Garbage-In, Garbage-Out";
+                infoDesc.innerHTML = "Since Lab 2 (Cleaning) was done poorly, all subsequent analysis (Labs 3-6) contains noise. The Project conclusions are now unreliable.";
+                infoPanel.classList.add('visible');
+            } else {
+                garbageBtn.innerText = "⚠️ Simulate Bad Preprocessing";
+                document.getElementById('part-analysis').classList.remove('corrupted');
+                document.getElementById('part-discuss').classList.remove('corrupted');
+                hideInfo();
+            }
+        }
+    </script>
+</body>
+</html>
