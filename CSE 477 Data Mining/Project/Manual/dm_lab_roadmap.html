@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CSE477 Data Mining Lab — Roadmap (Interactive)</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1620;
+      --card:#111c28;
+      --text:#e9eef5;
+      --muted:#b9c3cf;
+      --stroke:#2a3a4d;
+      --accent:#7dd3fc;
+      --warn:#fbbf24;
+      --good:#86efac;
+      --bad:#fb7185;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 20% 0%, #122033 0%, var(--bg) 55%);
+      color:var(--text);
+    }
+    header{
+      padding:16px 18px;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
+    }
+    header h1{
+      margin:0 0 6px 0;
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:0.2px;
+    }
+    header p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+      max-width: 1100px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap:14px;
+      padding:14px;
+      max-width: 1250px;
+      margin: 0 auto;
+    }
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+    }
+
+    .card{
+      background: rgba(17,28,40,0.72);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+      overflow:hidden;
+    }
+
+    .cardHeader{
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,0.07);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .chipRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .chip{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color:var(--muted);
+      user-select:none;
+      cursor:pointer;
+    }
+    .chip.active{
+      border-color: rgba(125,211,252,0.55);
+      color: var(--text);
+      background: rgba(125,211,252,0.10);
+    }
+
+    .cardBody{padding:12px 14px;}
+
+    #tooltip{
+      position:fixed;
+      pointer-events:none;
+      z-index:50;
+      display:none;
+      max-width: 360px;
+      padding:10px 10px;
+      border-radius: 12px;
+      background: rgba(15,22,32,0.96);
+      border:1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+      font-size:12px;
+      line-height:1.35;
+      color:var(--text);
+    }
+    #tooltip .tTitle{font-weight:700; margin-bottom:4px}
+    #tooltip .tBody{color:var(--muted)}
+
+    .details h2{
+      margin:0;
+      font-size:16px;
+      letter-spacing:0.2px;
+    }
+    .details .sub{
+      margin:6px 0 0 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .section{
+      margin-top:12px;
+      padding:10px 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.07);
+    }
+    .section h3{
+      margin:0 0 6px 0;
+      font-size:13px;
+      color:var(--text);
+    }
+    .section p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+      white-space:pre-wrap;
+    }
+    .miniNote{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.45;
+      opacity:0.95;
+    }
+    .btnRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    button{
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color:var(--text);
+      padding:8px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    button:hover{border-color: rgba(125,211,252,0.5)}
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:11px;
+      padding:2px 6px;
+      border-radius: 8px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+    }
+    .tag{
+      display:inline-block;
+      margin: 6px 6px 0 0;
+      padding:4px 8px;
+      font-size:11px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .hr{
+      height:1px;
+      background: rgba(255,255,255,0.08);
+      margin:10px 0;
+    }
+    .small{
+      font-size:11px;
+      color: var(--muted);
+      line-height:1.45;
+    }
+    .emph{
+      color: var(--text);
+      font-weight: 650;
+    }
+    .warn{
+      color: var(--warn);
+      font-weight:650;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>CSE477: Data Mining Lab — Interactive Roadmap</h1>
+  <p>
+    এই ফাইলটি ল্যাব (Lab 1–6) থেকে Final Project (Research Toolkit: Dashboard/Manual/Resource Generator) পর্যন্ত পুরো workflow-টা
+    প্রাথমিকভাবে বুঝতে সাহায্য করবে। সব তথ্য আপনার “Master Introductory Document”-এর ভেতর থেকে নেওয়া।
+  </p>
+</header>
+
+<div class="layout">
+  <!-- Diagram -->
+  <div class="card">
+    <div class="cardHeader">
+      <div class="chipRow">
+        <div class="chip active" id="chipAll">Full View</div>
+        <div class="chip" id="chipLabs">Labs 1–6</div>
+        <div class="chip" id="chipProject">Final Project</div>
+      </div>
+      <div class="small">Hover = hint, Click = details</div>
+    </div>
+    <div class="cardBody">
+      <svg id="roadmap" viewBox="0 0 900 520" width="100%" height="520" style="display:block;">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L10,3 L0,6 Z" fill="rgba(233,238,245,0.55)"></path>
+          </marker>
+          <marker id="arrowAccent" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L10,3 L0,6 Z" fill="rgba(125,211,252,0.85)"></path>
+          </marker>
+        </defs>
+
+        <!-- Background guides (subtle) -->
+        <rect x="12" y="12" width="876" height="496" rx="18" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)"></rect>
+
+        <text x="40" y="60" fill="rgba(233,238,245,0.85)" font-size="14" font-weight="700">Phase I: Learning Modules (Labs 1–6)</text>
+        <text x="520" y="60" fill="rgba(233,238,245,0.85)" font-size="14" font-weight="700">Phase II: Final Project (Research Toolkit)</text>
+
+        <!-- Connectors will be drawn by JS -->
+        <g id="edges"></g>
+
+        <!-- Nodes will be drawn by JS -->
+        <g id="nodes"></g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Details -->
+  <div class="card details">
+    <div class="cardHeader">
+      <h2 id="dTitle">কোনো একটি নোডে ক্লিক করুন</h2>
+      <div class="kbd">Esc</div>
+    </div>
+    <div class="cardBody">
+      <p class="sub" id="dSubtitle">
+        Lab box বা Project component/step নির্বাচন করলে এখানে Activity, Learning Outcome, এবং workflow connection দেখা যাবে।
+      </p>
+
+      <div class="section" id="secActivity">
+        <h3>Activity</h3>
+        <p id="dActivity">—</p>
+      </div>
+
+      <div class="section" id="secOutcome">
+        <h3>Learning Outcome / Purpose</h3>
+        <p id="dOutcome">—</p>
+      </div>
+
+      <div class="section" id="secOutput">
+        <h3>Technical Output / Artifact</h3>
+        <p id="dOutput">—</p>
+      </div>
+
+      <div class="section" id="secDownstream">
+        <h3>Why it matters downstream</h3>
+        <p id="dDownstream">—</p>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section" id="secNotes">
+        <h3>Instructor / Student Guardrails (from document)</h3>
+        <p id="dNotes">—</p>
+      </div>
+
+      <div class="btnRow" id="projectStepper" style="display:none;">
+        <button id="btnPrev">◀ Previous Step</button>
+        <button id="btnNext">Next Step ▶</button>
+      </div>
+
+      <div class="miniNote" id="miniNote">
+        নোট: এখানে কোনো “ডেটা রেজাল্ট” দেখানো হয়নি—এটা কেবল workflow intro/roadmap। (ডেমো ভিজ্যুয়াল দরকার হলে আলাদা করে “synthetic demo” হিসেবে যোগ করা যাবে।)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip">
+  <div class="tTitle" id="ttTitle"></div>
+  <div class="tBody" id="ttBody"></div>
+</div>
+
+<script>
+  // -----------------------------
+  // Data (ONLY from your provided Master Introductory Document)
+  // -----------------------------
+  const guardrailsText = [
+    "Code Adaptation: Students must adapt provided code to their specific data formats; not blind copying.",
+    "Methodological Soundness: Final project requires justification of methodological choices and acknowledgment of limitations.",
+    "Integrity: AI/toolkit guardrails against hallucination; students must verify AI-generated insights against their dataset."
+  ].join("\\n");
+
+  const nodes = [
+    // Labs
+    {
+      id:"lab1",
+      kind:"lab",
+      label:"Lab 1",
+      title:"Data Collection & Exploration (Foundation)",
+      x:60, y:90, w:360, h:64,
+      activity:"yt-dlp দিয়ে raw comments এবং captions collect করা।",
+      outcome:"Real-world unstructured data handle করা এবং authored text (captions) বনাম user-generated content (comments)-এর linguistic পার্থক্য বোঝা।",
+      output:"Raw comments/captions (collected data).",
+      downstream:"বেসিক properties (length, vocabulary) explore করলে পরের analysis-এর জন্য ভিত্তি তৈরি হয়।",
+      tooltip:"Foundation: unstructured text + basic exploration"
+    },
+    {
+      id:"lab2",
+      kind:"lab",
+      label:"Lab 2",
+      title:"Preprocessing & Cleaning (Master Key)",
+      x:60, y:170, w:360, h:74,
+      activity:"Tokenization, stopword removal, normalization, noise reduction।",
+      outcome:"Preprocessing decisions downstream analysis-কে সরাসরি প্রভাবিত করে—careless হলে 'Garbage-in' → 'Garbage-out'।",
+      output:"cleaned_comments.csv",
+      downstream:"ডকে বলা আছে: Lab 2-এর output (cleaned_comments.csv) হলো Labs 3–6-এর critical input। তাই এখানে ভুল হলে পরের সব ল্যাবের ফল unreliable হয়।",
+      tooltip:"Master Key: cleaned_comments.csv drives Labs 3–6",
+      isKey:true
+    },
+    {
+      id:"lab3",
+      kind:"lab",
+      label:"Lab 3",
+      title:"Pattern Discovery (Association Mining)",
+      x:60, y:265, w:360, h:64,
+      activity:"Apriori algorithm ব্যবহার করে co-occurring words খোঁজা।",
+      outcome:"Common words vs meaningful associations আলাদা করা; support, confidence, lift—মেট্রিকগুলোকে context-এ interpret করা (শুধু code run নয়)।",
+      output:"Association rules / frequent itemsets (analysis output).",
+      downstream:"Lab2-এর cleaning ঠিক না হলে co-occurrence pattern misleading হতে পারে।",
+      tooltip:"Apriori: support/confidence/lift interpretation"
+    },
+    {
+      id:"lab4",
+      kind:"lab",
+      label:"Lab 4",
+      title:"Temporal Analysis (Trends Over Time)",
+      x:60, y:345, w:360, h:64,
+      activity:"Data time-based chunks-এ ভাগ করে evolving trends observe করা।",
+      outcome:"Data static না—time-এর সাথে patterns বদলায়; correlation analysis দিয়ে evolving trends-এর relationship reason করা।",
+      output:"Time-chunked trend/correlation analyses.",
+      downstream:"Lab2-এর consistent preprocessing না থাকলে time comparison skew হতে পারে।",
+      tooltip:"Trends over time + correlation reasoning"
+    },
+    {
+      id:"lab5",
+      kind:"lab",
+      label:"Lab 5",
+      title:"Unsupervised Learning (Clustering)",
+      x:60, y:425, w:360, h:64,
+      activity:"TF-IDF representations + K-Means এবং DBSCAN।",
+      outcome:"Unsupervised learning-এর ধারণা; cluster interpretation ambiguous হতে পারে—human critical evaluation দরকার।",
+      output:"Clusters + interpretations (analysis output).",
+      downstream:"Text representation/cleaning (Lab2) cluster quality বদলে দেয়।",
+      tooltip:"Clustering: ambiguity + human judgment"
+    },
+    {
+      id:"lab6",
+      kind:"lab",
+      label:"Lab 6",
+      title:"Synthesis & Sentiment Analysis",
+      x:60, y:505, w:360, h:64,
+      activity:"Keyword Extraction, N-grams, Sentiment Analysis integrate করা।",
+      outcome:"আগের skills synthesize করে বিভিন্ন text source-এর emotional tone compare করা (video content vs audience reaction উদাহরণ)।",
+      output:"Sentiment + keyword/ngram comparisons.",
+      downstream:"এখান থেকে student project phase-এ independent analysis-এ যায়।",
+      tooltip:"Synthesis: compare emotional tone across sources"
+    },
+
+    // Project side: staircase + toolkit components
+    {
+      id:"staircase",
+      kind:"project",
+      label:"P1–P10",
+      title:"Research Staircase (10-step process)",
+      x:520, y:90, w:330, h:118,
+      activity:"Dashboard-এর visualization-এ P1 থেকে P10: topic deconstruct করে project build করার 10-step process map করা।",
+      outcome:"Workflow-টাকে structured করে; students structure না ভেবে analysis-এ ফোকাস করতে পারে।",
+      output:"A mapped staircase of steps (P1–P10) in the dashboard visualization.",
+      downstream:"Labs-এর skills শেষ ধাপে research paper/dataset-এর উপর apply হয়।",
+      tooltip:"10-step deconstruction → project build"
+    },
+    {
+      id:"constraint",
+      kind:"project",
+      label:"Tool",
+      title:"Constraint Calculator (in Dashboard)",
+      x:520, y:220, w:330, h:60,
+      activity:"Semester timeline অনুযায়ী project idea feasible কি না assess করতে সাহায্য করে (ডকে উল্লেখ আছে)।",
+      outcome:"Over-ambitious scope early detect করে risk কমায়।",
+      output:"A feasibility assessment UI (calculator inside dashboard).",
+      downstream:"Feasible scope না হলে project শেষ পর্যন্ত দাঁড়ানো কঠিন—তাই upfront constraint check।",
+      tooltip:"Feasibility check within semester constraints"
+    },
+    {
+      id:"dash",
+      kind:"toolkit",
+      label:"Dashboard",
+      title:"Dashboard (index.html & v1_InfoGraph.html)",
+      x:520, y:305, w:330, h:64,
+      activity:"Browser-based visualization; Research Staircase + Constraint Calculator অন্তর্ভুক্ত।",
+      outcome:"Process visualization + structure automation।",
+      output:"index.html, v1_InfoGraph.html",
+      downstream:"Staircase-এর steps অনুসরণ করে analysis path সেট হয়।",
+      tooltip:"Browser-based staircase visualization"
+    },
+    {
+      id:"manual",
+      kind:"toolkit",
+      label:"Execution Engine",
+      title:"Execution Engine (v1_manual.docx)",
+      x:520, y:385, w:330, h:74,
+      activity:"Core protocol document: students LLM (ChatGPT/Gemini) দিয়ে paper/dataset analyze করার জন্য specific prompts follow করে। Workflow: Deconstruct → Evaluate → Synthesize (Micro-Plan)।",
+      outcome:"Analysis-কে systematic করে; assumptions/gaps identify করতে সাহায্য করে।",
+      output:"v1_manual.docx (protocol + prompts).",
+      downstream:"LLM outputs অবশ্যই dataset দিয়ে verify করা—ডকে integrity guardrail আছে।",
+      tooltip:"Protocol prompts: deconstruct/evaluate/synthesize"
+    },
+    {
+      id:"finder",
+      kind:"toolkit",
+      label:"Resource Generator",
+      title:"Resource Generator (0_TargetedPaperFinding...txt)",
+      x:520, y:475, w:330, h:64,
+      activity:"Relevant, high-quality research papers/datasets খুঁজতে সহায়তা করে যাতে low-quality material দিয়ে শুরু না হয়।",
+      outcome:"Better input material → better project foundation।",
+      output:"0_TargetedPaperFinding...txt",
+      downstream:"Paper/dataset selection ভুল হলে পুরো project direction দুর্বল হয়—তাই upfront selection support।",
+      tooltip:"Helps find high-quality papers/datasets"
+    }
+  ];
+
+  // Edges (workflow)
+  const edges = [
+    ["lab1","lab2","arrow"],
+    ["lab2","lab3","arrowAccent"],
+    ["lab3","lab4","arrow"],
+    ["lab4","lab5","arrow"],
+    ["lab5","lab6","arrow"],
+    // emphasize Lab2 critical input for 4-6 (extra links)
+    ["lab2","lab4","arrowAccent","dashed"],
+    ["lab2","lab5","arrowAccent","dashed"],
+    ["lab2","lab6","arrowAccent","dashed"],
+
+    ["lab6","staircase","arrowAccent"],
+    ["staircase","dash","arrow","dashed"],
+    ["staircase","manual","arrow","dashed"],
+    ["staircase","finder","arrow","dashed"],
+    ["dash","constraint","arrow","dashed"]
+  ];
+
+  const svg = document.getElementById("roadmap");
+  const gNodes = document.getElementById("nodes");
+  const gEdges = document.getElementById("edges");
+
+  const tooltip = document.getElementById("tooltip");
+  const ttTitle = document.getElementById("ttTitle");
+  const ttBody = document.getElementById("ttBody");
+
+  const dTitle = document.getElementById("dTitle");
+  const dSubtitle = document.getElementById("dSubtitle");
+  const dActivity = document.getElementById("dActivity");
+  const dOutcome = document.getElementById("dOutcome");
+  const dOutput = document.getElementById("dOutput");
+  const dDownstream = document.getElementById("dDownstream");
+  const dNotes = document.getElementById("dNotes");
+
+  const chipAll = document.getElementById("chipAll");
+  const chipLabs = document.getElementById("chipLabs");
+  const chipProject = document.getElementById("chipProject");
+
+  const stepper = document.getElementById("projectStepper");
+  const btnPrev = document.getElementById("btnPrev");
+  const btnNext = document.getElementById("btnNext");
+
+  let filterMode = "all"; // all | labs | project
+  let selectedId = null;
+
+  // project stepper state (generic, because the document does not provide step names)
+  let pIndex = 0;
+  const pSteps = Array.from({length:10}, (_,i)=>`P${i+1}`);
+
+  function setFilter(mode){
+    filterMode = mode;
+    chipAll.classList.toggle("active", mode==="all");
+    chipLabs.classList.toggle("active", mode==="labs");
+    chipProject.classList.toggle("active", mode==="project");
+    render();
+  }
+
+  chipAll.onclick = ()=>setFilter("all");
+  chipLabs.onclick = ()=>setFilter("labs");
+  chipProject.onclick = ()=>setFilter("project");
+
+  function showTooltip(evt, title, body){
+    ttTitle.textContent = title;
+    ttBody.textContent = body;
+    tooltip.style.display = "block";
+    moveTooltip(evt);
+  }
+  function moveTooltip(evt){
+    const pad = 14;
+    const x = evt.clientX + pad;
+    const y = evt.clientY + pad;
+    tooltip.style.left = x + "px";
+    tooltip.style.top  = y + "px";
+  }
+  function hideTooltip(){
+    tooltip.style.display = "none";
+  }
+
+  function nodeVisible(n){
+    if(filterMode==="all") return true;
+    if(filterMode==="labs") return n.kind==="lab";
+    if(filterMode==="project") return n.kind!=="lab";
+    return true;
+  }
+
+  function render(){
+    // clear
+    gNodes.innerHTML = "";
+    gEdges.innerHTML = "";
+
+    // draw edges
+    edges.forEach(([fromId,toId,marker,style])=>{
+      const a = nodes.find(n=>n.id===fromId);
+      const b = nodes.find(n=>n.id===toId);
+      if(!a || !b) return;
+      if(!nodeVisible(a) || !nodeVisible(b)) return;
+
+      const x1 = a.x + a.w;
+      const y1 = a.y + a.h/2;
+      const x2 = b.x;
+      const y2 = b.y + b.h/2;
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+      const midX = (x1 + x2) / 2;
+
+      // gentle curve
+      const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+      path.setAttribute("d", d);
+      path.setAttribute("fill","none");
+      path.setAttribute("stroke", style==="dashed" ? "rgba(125,211,252,0.35)" : "rgba(233,238,245,0.35)");
+      path.setAttribute("stroke-width", marker==="arrowAccent" ? "2.2" : "1.8");
+      if(style==="dashed"){
+        path.setAttribute("stroke-dasharray","6 6");
+      }
+      path.setAttribute("marker-end", `url(#${marker})`);
+      gEdges.appendChild(path);
+    });
+
+    // draw nodes
+    nodes.filter(nodeVisible).forEach(n=>{
+      const group = document.createElementNS("http://www.w3.org/2000/svg","g");
+      group.setAttribute("data-id", n.id);
+
+      const rect = document.createElementNS("http://www.w3.org/2000/svg","rect");
+      rect.setAttribute("x", n.x);
+      rect.setAttribute("y", n.y);
+      rect.setAttribute("width", n.w);
+      rect.setAttribute("height", n.h);
+      rect.setAttribute("rx", 16);
+
+      const isSelected = (selectedId===n.id);
+
+      // styling
+      const baseFill = "rgba(17,28,40,0.75)";
+      rect.setAttribute("fill", baseFill);
+
+      let stroke = "rgba(255,255,255,0.10)";
+      if(n.isKey) stroke = "rgba(251,191,36,0.75)";
+      if(isSelected) stroke = "rgba(125,211,252,0.95)";
+      rect.setAttribute("stroke", stroke);
+      rect.setAttribute("stroke-width", isSelected ? 2.6 : 1.2);
+
+      group.appendChild(rect);
+
+      const t1 = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t1.setAttribute("x", n.x + 16);
+      t1.setAttribute("y", n.y + 26);
+      t1.setAttribute("fill","rgba(233,238,245,0.90)");
+      t1.setAttribute("font-size","13");
+      t1.setAttribute("font-weight","700");
+      t1.textContent = `${n.label}: ${n.title}`;
+      group.appendChild(t1);
+
+      const t2 = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t2.setAttribute("x", n.x + 16);
+      t2.setAttribute("y", n.y + 48);
+      t2.setAttribute("fill","rgba(185,195,207,0.95)");
+      t2.setAttribute("font-size","11");
+      t2.textContent = n.tooltip || "";
+      group.appendChild(t2);
+
+      // small badge for Lab2
+      if(n.isKey){
+        const badge = document.createElementNS("http://www.w3.org/2000/svg","rect");
+        badge.setAttribute("x", n.x + n.w - 128);
+        badge.setAttribute("y", n.y + 14);
+        badge.setAttribute("width", 110);
+        badge.setAttribute("height", 20);
+        badge.setAttribute("rx", 999);
+        badge.setAttribute("fill", "rgba(251,191,36,0.12)");
+        badge.setAttribute("stroke","rgba(251,191,36,0.35)");
+        group.appendChild(badge);
+
+        const bt = document.createElementNS("http://www.w3.org/2000/svg","text");
+        bt.setAttribute("x", n.x + n.w - 118);
+        bt.setAttribute("y", n.y + 29);
+        bt.setAttribute("fill","rgba(251,191,36,0.95)");
+        bt.setAttribute("font-size","10.5");
+        bt.setAttribute("font-weight","700");
+        bt.textContent = "MASTER KEY";
+        group.appendChild(bt);
+      }
+
+      group.style.cursor = "pointer";
+
+      group.addEventListener("mousemove", (evt)=>{
+        showTooltip(evt, `${n.label}: ${n.title}`, n.tooltip || "");
+      });
+      group.addEventListener("mouseleave", hideTooltip);
+      group.addEventListener("click", ()=>{
+        selectNode(n.id);
+      });
+
+      gNodes.appendChild(group);
+    });
+  }
+
+  function selectNode(id){
+    selectedId = id;
+    const n = nodes.find(x=>x.id===id);
+    if(!n) return;
+
+    dTitle.textContent = `${n.label}: ${n.title}`;
+    dSubtitle.textContent = (n.kind==="lab")
+      ? "Phase I (Learning Phase) — এই ল্যাবের purpose এবং downstream dependency এখানে দেখানো হচ্ছে।"
+      : "Phase II (Project Phase) — Research Toolkit/Process-এর সাথে কীভাবে যুক্ত, সেটি এখানে দেখানো হচ্ছে।";
+
+    dActivity.textContent = n.activity || "—";
+    dOutcome.textContent = n.outcome || "—";
+    dOutput.textContent = n.output || "—";
+    dDownstream.textContent = n.downstream || "—";
+    dNotes.textContent = guardrailsText;
+
+    // Stepper only when staircase selected
+    if(id==="staircase"){
+      stepper.style.display = "flex";
+      pIndex = 0;
+      updateStaircasePanel();
+    } else {
+      stepper.style.display = "none";
+    }
+
+    render();
+  }
+
+  function updateStaircasePanel(){
+    const n = nodes.find(x=>x.id==="staircase");
+    if(!n) return;
+    // Document does not provide step names. Keep generic.
+    dActivity.textContent =
+      "Dashboard-এর visualization-এ P1 থেকে P10: topic deconstruct করে project build করার 10-step process map করা।";
+    dOutcome.textContent =
+      `আপনি এখন দেখছেন: ${pSteps[pIndex]} (জেনেরিক স্টেপ লেবেল)।\\nডকে step-name/definition নেই, তাই এখানে P1…P10-কে placeholder রাখা হয়েছে।`;
+    dOutput.textContent =
+      "Staircase steps (P1–P10) inside the dashboard visualization.";
+    dDownstream.textContent =
+      "Labs-এর শেখা skills শেষ পর্যন্ত research paper/dataset-এর উপর apply করার কাঠামো তৈরি করে।";
+
+    btnPrev.disabled = (pIndex===0);
+    btnNext.disabled = (pIndex===pSteps.length-1);
+  }
+
+  btnPrev.onclick = ()=>{
+    if(pIndex>0){ pIndex--; updateStaircasePanel(); }
+  };
+  btnNext.onclick = ()=>{
+    if(pIndex<pSteps.length-1){ pIndex++; updateStaircasePanel(); }
+  };
+
+  // Esc clears selection
+  window.addEventListener("keydown", (e)=>{
+    if(e.key==="Escape"){
+      selectedId = null;
+      dTitle.textContent = "কোনো একটি নোডে ক্লিক করুন";
+      dSubtitle.textContent = "Lab box বা Project component/step নির্বাচন করলে এখানে Activity, Learning Outcome, এবং workflow connection দেখা যাবে।";
+      dActivity.textContent = "—";
+      dOutcome.textContent = "—";
+      dOutput.textContent = "—";
+      dDownstream.textContent = "—";
+      dNotes.textContent = "—";
+      stepper.style.display = "none";
+      render();
+    }
+  });
+
+  // initial render
+  render();
+</script>
+</body>
+</html>
