@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 3: Pattern Discovery Infographic</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Typography & Base */
+        body {
+            background-color: #f3f4f6; /* slate-100 */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* A4 Page Layout */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Section Styling */
+        .section-box {
+            border-left: 4px solid #0f766e; /* teal-700 */
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-card {
+            background-color: #f0fdfa; /* teal-50 */
+            border: 1px solid #ccfbf1; /* teal-100 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        /* Print Specifics */
+        @media print {
+            body {
+                background: none;
+                margin: 0;
+            }
+            .page {
+                margin: 0;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm; /* Enforce height for consistent footer placement */
+                page-break-after: always;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        /* Footer positioning */
+        .page-footer {
+            margin-top: auto;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Control Bar (Screen Only) -->
+    <div class="no-print fixed top-4 right-4 z-50">
+        <button onclick="window.print()" class="bg-teal-700 hover:bg-teal-800 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2">
+            <i class="fas fa-print"></i> Save as PDF
+        </button>
+    </div>
+
+    <!-- PAGE 1: Intro & Concepts -->
+    <div class="page">
+        <!-- Header -->
+        <header class="border-b-4 border-teal-700 pb-4 mb-6">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">CSE477: Data Mining Lab 3</h1>
+                    <h2 class="text-xl text-teal-700 font-semibold mt-1">Pattern Discovery from YouTube Text</h2>
+                </div>
+                <div class="text-right">
+                    <span class="block text-sm text-slate-500">Task Count: ~57</span>
+                    <span class="block text-sm text-slate-500">Focus: Co-occurrence & Apriori</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Objective -->
+        <section class="mb-8">
+            <h3 class="text-lg font-bold text-slate-800 uppercase tracking-wider mb-2"><i class="fas fa-bullseye text-teal-600 mr-2"></i>Lab Objective</h3>
+            <p class="text-slate-700 leading-relaxed">
+                This session introduces <strong>frequent word pattern discovery</strong> using cleaned YouTube datasets. 
+                Instead of formal theory alone, we blend manual inspection with algorithmic mining (Apriori) to find meaningful token co-occurrences.
+                The goal: Transform raw tokens into contextual insights.
+            </p>
+        </section>
+
+        <!-- Section A: Setup -->
+        <section class="mb-8">
+            <div class="section-box">
+                <h4 class="text-xl font-bold text-slate-800">A. The Core Concept: Co-occurrence</h4>
+                <p class="text-slate-600 mt-1 mb-3">
+                    When two or more words appear together across multiple rows of data, they "co-occur." 
+                    This connection reveals context without reading every single comment manually.
+                </p>
+                <div class="flex gap-4">
+                    <div class="flex-1 bg-slate-50 p-3 rounded border border-slate-200">
+                        <span class="font-bold text-slate-700 block mb-1">Unigram Frequency</span>
+                        <p class="text-xs text-slate-500">Counting "Exam" (50 times).</p>
+                    </div>
+                    <div class="flex-1 bg-teal-50 p-3 rounded border border-teal-200">
+                        <span class="font-bold text-teal-800 block mb-1">Co-occurrence</span>
+                        <p class="text-xs text-teal-700">Counting "Exam" + "Stress" appearing together (20 times).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section B: Transactions -->
+        <section class="flex-grow">
+            <h4 class="text-xl font-bold text-slate-800 mb-4"><i class="fas fa-shopping-basket text-teal-600 mr-2"></i>B. From Comments to Transactions</h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-6">
+                <div>
+                    <p class="text-slate-700 mb-4 text-sm leading-6">
+                        In text mining, a "transaction" is treated like a shopping basket. 
+                        Just as a shopper buys <strong>{Milk, Bread, Eggs}</strong>, a YouTube comment contains a basket of words <strong>{Love, Channel, Great}</strong>.
+                    </p>
+                    <ul class="text-sm text-slate-600 list-disc ml-5 space-y-1">
+                        <li>Treat each list in <code>cleaned_tokens</code> as one basket.</li>
+                        <li>Remove sparse baskets (fewer than 3 tokens).</li>
+                        <li>Assign unique Transaction IDs.</li>
+                    </ul>
+                </div>
+                
+                <!-- Diagram: Transformation -->
+                <div class="bg-white p-4 rounded-lg border border-slate-300 shadow-sm">
+                    <div class="flex flex-col gap-2">
+                        <div class="bg-gray-100 p-2 rounded text-xs text-gray-500 border-l-4 border-gray-400">
+                            <strong>Raw:</strong> "I love this channel, great work!"
+                        </div>
+                        <div class="flex justify-center text-gray-400"><i class="fas fa-arrow-down"></i></div>
+                        <div class="bg-blue-50 p-2 rounded text-xs text-blue-600 border-l-4 border-blue-400 font-mono">
+                            ['love', 'channel', 'great', 'work']
+                        </div>
+                        <div class="flex justify-center text-gray-400"><i class="fas fa-arrow-down"></i></div>
+                        <div class="bg-teal-100 p-2 rounded text-xs text-teal-800 border-l-4 border-teal-600 font-bold">
+                            Transaction T_101
+                        </div>
+                    </div>
+                    <div class="mt-2 text-center text-[10px] text-slate-400 uppercase tracking-widest">Data Transformation Flow</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-footer">
+            <span>CSE477 Lab 3 Manual</span>
+            <span>Page 1 of 4</span>
+        </div>
+    </div>
+
+    <!-- PAGE 2: Methods (Manual & Algo) -->
+    <div class="page">
+        <!-- Header Compact -->
+        <header class="border-b border-slate-200 pb-2 mb-6">
+            <h2 class="text-lg font-bold text-slate-400 uppercase">Discovery Methods</h2>
+        </header>
+
+        <!-- Section C: Manual Discovery -->
+        <section class="mb-8">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">C. Manual Pattern Discovery</h3>
+            <p class="text-sm text-slate-600 mb-4">
+                Before using algorithms, iterate over baskets to count pairwise word co-occurrences. 
+                Keep pairs with significant counts (e.g., >= 3) to filter out noise.
+            </p>
+            
+            <!-- Chart Container -->
+            <div class="bg-white p-4 rounded border border-slate-200 shadow-sm mb-4">
+                <canvas id="coOccurrenceChart" style="max-height: 200px;"></canvas>
+                <p class="text-center text-xs text-slate-400 mt-2 italic">Fig 1. Illustrative example of frequent pairs vs. single words.</p>
+            </div>
+
+            <div class="flex gap-4 text-sm text-slate-600">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-project-diagram text-teal-600"></i>
+                    <span>Network Graphs: Visualize words as nodes and co-occurrence as edges.</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-filter text-teal-600"></i>
+                    <span>Filter: Remove stopwords from pairs for clarity.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section D: Algorithmic Discovery -->
+        <section class="flex-grow">
+            <h3 class="text-xl font-bold text-slate-800 mb-3"><i class="fas fa-cogs text-teal-600 mr-2"></i>D. Algorithmic: The Apriori Method</h3>
+            <p class="text-sm text-slate-600 mb-4">
+                Apriori detects itemsets that meet a minimum threshold. It generates rules: 
+                <em>"If a comment contains X, it likely contains Y."</em>
+            </p>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <!-- Support -->
+                <div class="bg-slate-50 p-3 rounded border-t-4 border-blue-500">
+                    <h5 class="font-bold text-blue-700 text-sm">Support</h5>
+                    <p class="text-xs text-slate-600 mt-1">How popular is the itemset?</p>
+                    <code class="block mt-2 text-[10px] bg-slate-200 p-1 rounded">Freq(A,B) / Total</code>
+                </div>
+                <!-- Confidence -->
+                <div class="bg-slate-50 p-3 rounded border-t-4 border-green-500">
+                    <h5 class="font-bold text-green-700 text-sm">Confidence</h5>
+                    <p class="text-xs text-slate-600 mt-1">How likely is Y given X?</p>
+                    <code class="block mt-2 text-[10px] bg-slate-200 p-1 rounded">Freq(A,B) / Freq(A)</code>
+                </div>
+                <!-- Lift -->
+                <div class="bg-slate-50 p-3 rounded border-t-4 border-purple-500">
+                    <h5 class="font-bold text-purple-700 text-sm">Lift</h5>
+                    <p class="text-xs text-slate-600 mt-1">Is the link stronger than random chance?</p>
+                    <code class="block mt-2 text-[10px] bg-slate-200 p-1 rounded">Conf(A->B) / Supp(B)</code>
+                </div>
+            </div>
+
+            <!-- Workflow -->
+            <div class="bg-slate-800 text-white p-4 rounded-lg">
+                <h5 class="text-sm font-bold uppercase tracking-widest text-teal-400 mb-2">Apriori Workflow</h5>
+                <ol class="list-decimal ml-5 text-sm space-y-2 text-slate-300">
+                    <li>One-hot encode transaction list (using <code>mlxtend</code>).</li>
+                    <li>Run Apriori with <code>min_support</code> (e.g., 0.3, 0.2).</li>
+                    <li>Generate association rules & Calculate metrics.</li>
+                    <li>Filter: Confidence >= 0.6, Lift >= 1.2.</li>
+                </ol>
+            </div>
+        </section>
+
+        <div class="page-footer">
+            <span>CSE477 Lab 3 Manual</span>
+            <span>Page 2 of 4</span>
+        </div>
+    </div>
+
+    <!-- PAGE 3: Exploration & Insights -->
+    <div class="page">
+         <!-- Header Compact -->
+         <header class="border-b border-slate-200 pb-2 mb-6">
+            <h2 class="text-lg font-bold text-slate-400 uppercase">Exploration & Insights</h2>
+        </header>
+
+        <!-- Section E: Variations -->
+        <section class="mb-8">
+            <h3 class="text-xl font-bold text-slate-800 mb-3">E. Exploration Using Variations</h3>
+            <div class="flex flex-row gap-6">
+                <div class="w-1/2">
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Algorithms are sensitive. Tweaking one number (like minimum support) can flood you with patterns or return nothing. 
+                        <strong>Key experiment:</strong> Compare rules generated from merged datasets (Comments + Captions) versus separate ones.
+                    </p>
+                </div>
+                <div class="w-1/2 bg-yellow-50 border border-yellow-200 p-3 rounded text-sm text-yellow-800">
+                    <strong class="block mb-1"><i class="fas fa-sliders-h mr-1"></i> Tuning Tasks:</strong>
+                    <ul class="list-disc ml-4 space-y-1 text-xs">
+                        <li>Lower min_support (0.15, 0.05).</li>
+                        <li>Swap lemmatization for stemming.</li>
+                        <li>Remove tokens under 4 characters.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section F: Interpretation -->
+        <section class="flex-grow">
+            <h3 class="text-xl font-bold text-slate-800 mb-3"><i class="fas fa-lightbulb text-teal-600 mr-2"></i>F. Interpretation & Visualization</h3>
+            <p class="text-sm text-slate-600 mb-4">
+                Finding patterns is just step one. Interpretation turns data into insight. 
+                If "online" and "lecture" co-occur, are students discussing remote learning quality?
+            </p>
+
+            <!-- Scatter Plot Container -->
+            <div class="bg-white p-4 rounded border border-slate-200 shadow-sm relative mb-4">
+                <h5 class="text-center text-xs font-bold text-slate-500 mb-2">Support vs. Confidence (Illustrative)</h5>
+                <canvas id="scatterChart" style="max-height: 220px;"></canvas>
+                <div class="mt-2 text-[10px] text-center text-slate-400">
+                    High Confidence + High Support = Strong, Common Rules.
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded">
+                    <h6 class="font-bold text-slate-700 text-xs mb-1">Visual Tasks</h6>
+                    <ul class="list-disc ml-4 text-xs text-slate-600">
+                        <li>Bar chart: Top 10 2-itemsets.</li>
+                        <li>Word Cloud: Frequent items.</li>
+                        <li>Cluster Graph: Word associations.</li>
+                    </ul>
+                </div>
+                <div class="p-3 bg-teal-50 border border-teal-200 rounded">
+                    <h6 class="font-bold text-teal-800 text-xs mb-1">Insight Generation</h6>
+                    <ul class="list-disc ml-4 text-xs text-teal-700">
+                        <li>Write 3 insight statements.</li>
+                        <li>Label with metrics (Supp/Conf).</li>
+                        <li>Compare Caption vs Comment patterns.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-footer">
+            <span>CSE477 Lab 3 Manual</span>
+            <span>Page 3 of 4</span>
+        </div>
+    </div>
+
+    <!-- PAGE 4: Reflection & Wrap Up -->
+    <div class="page">
+        <!-- Header Compact -->
+        <header class="border-b border-slate-200 pb-2 mb-6">
+            <h2 class="text-lg font-bold text-slate-400 uppercase">Reflection & Submission</h2>
+        </header>
+
+        <!-- Section G: Reflection -->
+        <section class="mb-8">
+            <h3 class="text-xl font-bold text-slate-800 mb-4">G. Critical Reflection</h3>
+            <p class="text-sm text-slate-600 mb-6">
+                Pattern mining is only useful if we pause to distinguish signal from noise. 
+                Answer the following in your report:
+            </p>
+            
+            <div class="space-y-4">
+                <div class="flex items-start gap-3">
+                    <div class="bg-teal-600 text-white w-8 h-8 flex items-center justify-center rounded-full shrink-0 font-bold">1</div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">Surprise Factor</h4>
+                        <p class="text-xs text-slate-600">"What is a surprising pair you found?" (Did it reveal a hidden sentiment?)</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="bg-teal-600 text-white w-8 h-8 flex items-center justify-center rounded-full shrink-0 font-bold">2</div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">Challenges</h4>
+                        <p class="text-xs text-slate-600">"What was hard about finding patterns?" (Was the data too sparse? Too much noise?)</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="bg-teal-600 text-white w-8 h-8 flex items-center justify-center rounded-full shrink-0 font-bold">3</div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">Next Steps</h4>
+                        <p class="text-xs text-slate-600">"What would you explore next?" (Different dataset? Temporal analysis?)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Checklist -->
+        <section class="flex-grow">
+            <div class="bg-slate-100 p-6 rounded-lg border-2 border-dashed border-slate-300">
+                <h3 class="text-lg font-bold text-slate-700 mb-4"><i class="fas fa-clipboard-check mr-2"></i>Submission Checklist</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" disabled class="accent-teal-600">
+                        <span>Final cleaned dataset (CSV)</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" disabled class="accent-teal-600">
+                        <span>Frequent Itemsets (CSV)</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" disabled class="accent-teal-600">
+                        <span>Association Rules (CSV)</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" disabled class="accent-teal-600">
+                        <span>All plots saved as PNG</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" disabled class="accent-teal-600">
+                        <span>Reflection Answers (Q1-Q3)</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" disabled class="accent-teal-600">
+                        <span>Folder: Lab3_PatternMining_Name</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mt-8 p-4 bg-blue-50 text-blue-800 text-xs rounded border-l-4 border-blue-600">
+                <strong>Looking Ahead:</strong> Retain your cleaned data and rules files. They will be required for the next lab session.
+            </div>
+        </section>
+
+        <div class="page-footer">
+            <span>CSE477 Lab 3 Manual</span>
+            <span>Page 4 of 4</span>
+        </div>
+    </div>
+
+    <!-- Script for Charts -->
+    <script>
+        // Chart 1: Co-occurrence Bar Chart (Illustrative)
+        const ctxPairs = document.getElementById('coOccurrenceChart').getContext('2d');
+        new Chart(ctxPairs, {
+            type: 'bar',
+            data: {
+                labels: ['climate + change', 'subscribe + channel', 'great + video', 'online + class', 'data + mining'],
+                datasets: [{
+                    label: 'Co-occurrence Count',
+                    data: [45, 38, 30, 22, 18],
+                    backgroundColor: 'rgba(13, 148, 136, 0.7)', // teal-600
+                    borderColor: 'rgba(13, 148, 136, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Chart 2: Scatter Plot Support vs Confidence (Illustrative)
+        const ctxScatter = document.getElementById('scatterChart').getContext('2d');
+        new Chart(ctxScatter, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Rules',
+                    data: [
+                        {x: 0.1, y: 0.65}, {x: 0.15, y: 0.70}, {x: 0.2, y: 0.8}, 
+                        {x: 0.05, y: 0.9}, {x: 0.3, y: 0.6}, {x: 0.12, y: 0.75},
+                        {x: 0.25, y: 0.85}, {x: 0.08, y: 0.55}
+                    ],
+                    backgroundColor: 'rgba(79, 70, 229, 0.7)' // indigo-600
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Support' },
+                        min: 0, max: 0.4
+                    },
+                    y: { 
+                        title: { display: true, text: 'Confidence' },
+                        min: 0.5, max: 1.0
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Supp: ${context.raw.x}, Conf: ${context.raw.y}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
