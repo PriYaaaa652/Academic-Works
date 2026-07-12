@@ -34,7 +34,7 @@ The purpose of this repository is to:
 ## ⚠️ Disclaimer
 
 These materials are shared strictly for educational purposes.
-Please avoid plagiarism and use the resources responsibly.
+Please avoid plagiarism and use the resources responsibly. 
 
 
 
