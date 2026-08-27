@@ -2,11 +2,13 @@
 
 This repository contains my academic materials and coursework for **PHY 209. The course covers the fundamental concepts of quantum physics, wave mechanics, quantum mechanical systems and an introduction to quantum computing.
 
+
 ## Course Instructor
 
 [**Dr. Alamgir Kabir**](https://www.du.ac.bd/faculty/faculty_details/PHY/198) <br>
 Professor, Department of Physics <br>
 University of Dhaka
+
 
 ## Course Topics
 
@@ -19,6 +21,7 @@ University of Dhaka
 * Introduction to Quantum Computing & Qubits
 * Quantum Logic Gates & Simple Search Algorithms
 
+
 ## Repository Contents
 
 This repository includes course-related materials such as:
@@ -29,6 +32,7 @@ This repository includes course-related materials such as:
 * 📄 Final Examination Materials
 * 🎤 Presentations & Viva Materials
 * 📖 Additional Study Resources
+
 
 ## References
 
@@ -41,5 +45,5 @@ This repository includes course-related materials such as:
 
 **Farhatun Nahar Priya**
 
-⭐ *Academic repository for study, coursework, and future reference.*
+> 📘 *A structured collection of course materials, coursework and learning resources for PHY 209.*
 
