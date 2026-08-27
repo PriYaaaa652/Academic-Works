@@ -1,4 +1,4 @@
-\# PHY 209 - Engineering Physics II (Quantum Mechanics)
+# PHY 209 - Engineering Physics II (Quantum Mechanics)
 
 
 
