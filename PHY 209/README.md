@@ -1,6 +1,6 @@
-# PHY 209 — Engineering Physics II (Quantum Mechanics)
+# PHY 209 - Engineering Physics II (Quantum Mechanics)
 
-This repository contains my academic materials and coursework for **PHY 209: Engineering Physics II (Quantum Mechanics)** at East West University. The course covers the fundamental concepts of quantum physics, wave mechanics, quantum-mechanical systems, and an introduction to quantum computing.
+This repository contains my academic materials and coursework for **PHY 209. The course covers the fundamental concepts of quantum physics, wave mechanics, quantum mechanical systems and an introduction to quantum computing.
 
 > **Semester:** Summer 2026 <br>
 > **Instructor:** Dr. Alamgir Kabir <br>
@@ -36,8 +36,8 @@ This repository includes course-related materials such as:
 
 ## References
 
-* **Arthur Beiser** — *Concepts of Modern Physics*, 6th Edition
-* **David J. Griffiths** — *Introduction to Quantum Mechanics*, 2nd Edition
+* **Arthur Beiser** - *Concepts of Modern Physics*, 6th Edition
+* **David J. Griffiths** - *Introduction to Quantum Mechanics*, 2nd Edition
 
 ---
 
