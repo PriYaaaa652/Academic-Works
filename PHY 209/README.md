@@ -2,14 +2,14 @@
 
 This repository contains my academic materials and coursework for **PHY 209: Engineering Physics II (Quantum Mechanics)** at East West University. The course covers the fundamental concepts of quantum physics, wave mechanics, quantum-mechanical systems, and an introduction to quantum computing.
 
-> **Semester:** Summer 2026
-> **Instructor:** Dr. Alamgir Kabir
+> **Semester:** Summer 2026 <br>
+> **Instructor:** Dr. Alamgir Kabir <br>
 > **Department:** Department of Mathematical and Physical Sciences (MPS)
 
 ## Course Instructor
 
-[**Dr. Alamgir Kabir**](https://www.du.ac.bd/faculty/faculty_details/PHY/198)
-Professor, Department of Physics
+[**Dr. Alamgir Kabir**](https://www.du.ac.bd/faculty/faculty_details/PHY/198) <br>
+Professor, Department of Physics <br>
 University of Dhaka
 
 ## Course Topics
