@@ -1,1 +1,1 @@
-# CSE 438 - Digital Image Processing 
+# CSE 438 Digital Image Processing 
